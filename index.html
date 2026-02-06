@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Preferred Experience Questionnaire</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<style>
+  :root{
+    --maxw: 820px;
+    --muted: rgba(0,0,0,.68);
+    --muted2: rgba(0,0,0,.55);
+    --border: rgba(0,0,0,.12);
+    --border2: rgba(0,0,0,.18);
+    --bg: #fff;
+  }
+
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    max-width: var(--maxw);
+    margin: 28px auto;
+    padding: 0 18px 60px;
+    line-height: 1.5;
+    background: var(--bg);
+    color: #111;
+  }
+
+  h1 { margin: 0 0 10px; }
+  p  { margin: 0 0 14px; color: var(--muted); }
+
+  /* Sticky header progress */
+  .sticky {
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    padding: 14px 0 10px;
+    border-bottom: 1px solid var(--border);
+    z-index: 10;
+  }
+  .progressRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .progressText {
+    font-size: 0.92em;
+    color: var(--muted);
+  }
+  progress {
+    width: 100%;
+    height: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  progress::-webkit-progress-bar { background-color: rgba(0,0,0,.08); }
+  progress::-webkit-progress-value { background-color: rgba(0,0,0,.35); }
+
+  h2 {
+    margin-top: 34px;
+    margin-bottom: 4px;
+  }
+  .sectionDesc {
+    margin: 0 0 14px;
+    color: var(--muted2);
+    font-size: 0.95em;
+  }
+
+  .question {
+    margin: 22px 0;
+    padding: 14px 14px 12px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .question:focus-within {
+    outline: 2px solid rgba(0,0,0,.25);
+    outline-offset: 2px;
+    border-color: var(--border2);
+  }
+
+  .qLabel {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .labels {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 0.9em;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  /* Slider + ticks */
+  .sliderWrap {
+    position: relative;
+    padding-top: 6px;
+  }
+  input[type="range"] {
+    width: 100%;
+    margin: 0;
+    height: 34px;                /* bigger touch area */
+    background: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  /* Midpoint marker: a subtle vertical line at 50% behind the track */
+  .midMarker {
+    position: absolute;
+    left: 50%;
+    top: 15px;
+    transform: translateX(-0.5px);
+    height: 14px;
+    width: 1px;
+    background: rgba(0,0,0,.28);
+    pointer-events: none;
+  }
+
+  /* Track */
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 10px;
+    background: rgba(0,0,0,.12);
+  }
+  input[type="range"]::-moz-range-track {
+    height: 6px;
+    border-radius: 10px;
+    background: rgba(0,0,0,.12);
+  }
+
+  /* Thumb */
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    margin-top: -7px;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: rgba(0,0,0,.55);
+    border: 2px solid rgba(255,255,255,.9);
+    box-shadow: 0 1px 3px rgba(0,0,0,.22);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: rgba(0,0,0,.55);
+    border: 2px solid rgba(255,255,255,.9);
+    box-shadow: 0 1px 3px rgba(0,0,0,.22);
+  }
+
+  /* Tick labels */
+  datalist {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 2px;
+    margin-top: 6px;
+    color: rgba(0,0,0,.45);
+    font-size: 0.78em;
+    user-select: none;
+  }
+  datalist option { width: 1px; } /* just for spacing */
+
+  .valueRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-top: 10px;
+  }
+  .value {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .hint {
+    color: var(--muted2);
+    font-size: 0.88em;
+  }
+
+  .actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 26px;
+  }
+  button {
+    padding: 12px 18px;
+    font-size: 1em;
+    cursor: pointer;
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    background: #fff;
+  }
+  button:hover { background: rgba(0,0,0,.04); }
+
+  .footerNote {
+    margin-top: 14px;
+    color: var(--muted2);
+    font-size: 0.9em;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="sticky" aria-live="polite">
+  <div class="progressRow">
+    <div class="progressText" id="progressText">Answered 0 / 15</div>
+  </div>
+  <progress id="progressBar" value="0" max="15"></progress>
+</div>
+
+<h1>Preferred Experience (Short Version)</h1>
+<p>This questionnaire asks about what you would prefer an experience to feel like. There are no right or wrong answers. Answer based on what you would ideally want.</p>
+
+<form id="experienceForm"></form>
+
+<div class="actions">
+  <button type="button" onclick="submitForm()">Submit (Download JSON)</button>
+  <button type="button" onclick="resetForm()">Reset</button>
+</div>
+
+<div class="footerNote">
+  If you’re unsure on a question, leaving it near the midpoint is acceptable.
+</div>
+
+<script>
+  const TICKS_ID = "ticks_0_10";
+
+  const sections = [
+    {
+      title: "Section A — Social & Emotional Orientation",
+      desc: "This section describes whether you prefer bonding/connection versus drive/activation in an experience.",
+      items: [
+        ["1. Ideally, would you prefer an experience focused more on emotional closeness or energy / performance?", "Energy / performance", "Emotional closeness"],
+        ["2. How important is feeling emotionally connected or intimate with others?"],
+        ["3. How important is feeling energized, stimulated, or outwardly engaged?"]
+      ]
+    },
+    {
+      title: "Section B — Temporal Texture",
+      desc: "This section describes whether you prefer smooth predictability versus noticeable waves/spikes in intensity.",
+      items: [
+        ["4. How smooth would you want the experience to unfold over time?"],
+        ["5. How predictable would you want your emotional state to feel moment to moment?"],
+        ["6. How comfortable are you with noticeable waves or spikes in intensity?", "Not comfortable", "Very comfortable"]
+      ]
+    },
+    {
+      title: "Section C — Cognitive & Meaning Structure",
+      desc: "This section describes whether you want emotions to feel coherent/understandable and meaning-rich versus flooded/overwhelming.",
+      items: [
+        ["7. How important is it that emotions feel understandable while they are happening?"],
+        ["8. How important is it that the experience feels meaningful?"],
+        ["9. How much emotional overwhelm would you be willing to tolerate, even if positive?", "None", "A great deal"]
+      ]
+    },
+    {
+      title: "Section D — Physiological State",
+      desc: "This section describes comfort, safety/relaxation, and how important recovery is afterward.",
+      items: [
+        ["10. How physically comfortable would you want your body to feel overall?"],
+        ["11. Ideally, your body would feel more:", "Activated / tense", "Safe / relaxed"],
+        ["12. How important is a smooth physical recovery afterward?"]
+      ]
+    },
+    {
+      title: "Section E — Phase Preferences",
+      desc: "This section describes onset/peak/ending preferences: abrupt vs gradual and whether clarity increases at peak.",
+      items: [
+        ["13. Preferred onset style:", "Abrupt", "Gradual"],
+        ["14. At peak intensity, you would prefer clarity to:", "Decrease", "Increase"],
+        ["15. Preferred ending style:", "Sudden drop", "Gradual taper"]
+      ]
+    }
+  ];
+
+  const TOTAL_QUESTIONS = sections.reduce((acc, s) => acc + s.items.length, 0);
+  const STORAGE_KEY = "preferred_experience_v1";
+
+  const form = document.getElementById("experienceForm");
+  const progressText = document.getElementById("progressText");
+  const progressBar = document.getElementById("progressBar");
+  progressBar.max = TOTAL_QUESTIONS;
+
+  // Create a shared datalist for ticks 0..10
+  const tickList = document.createElement("datalist");
+  tickList.id = TICKS_ID;
+  for (let i = 0; i <= 10; i++) {
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.label = String(i);
+    tickList.appendChild(opt);
+  }
+  document.body.appendChild(tickList);
+
+  function makeSectionHeader(title, desc){
+    const h = document.createElement("h2");
+    h.textContent = title;
+    const d = document.createElement("div");
+    d.className = "sectionDesc";
+    d.textContent = desc;
+    form.appendChild(h);
+    form.appendChild(d);
+  }
+
+  function makeQuestionCard(label, leftLabel, rightLabel){
+    const div = document.createElement("div");
+    div.className = "question";
+
+    const id = "q_" + Math.random().toString(16).slice(2);
+
+    div.innerHTML = `
+      <label class="qLabel" for="${id}">${label}</label>
+      <div class="labels">
+        <span>${leftLabel ?? "0 = Not at all"}</span>
+        <span>${rightLabel ?? "10 = Extremely"}</span>
+      </div>
+
+      <div class="sliderWrap">
+        <div class="midMarker" aria-hidden="true"></div>
+        <input
+          id="${id}"
+          type="range"
+          min="0"
+          max="10"
+          step="1"
+          value="5"
+          list="${TICKS_ID}"
+          data-q="${label}"
+          aria-label="${label}"
+        />
+      </div>
+
+      <datalist>
+        ${Array.from({length: 11}, (_, i) => `<option>${i}</option>`).join("")}
+      </datalist>
+
+      <div class="valueRow">
+        <div class="hint">Use arrows for fine adjustment.</div>
+        <div class="value" aria-live="polite">5</div>
+      </div>
+    `;
+
+    const slider = div.querySelector("input");
+    const value = div.querySelector(".value");
+
+    slider.addEventListener("input", () => {
+      value.textContent = slider.value;
+      slider.dataset.touched = "1";
+      saveDraft();
+      updateProgress();
+    });
+
+    // Touch-friendly: treat pointerup as "touched" too
+    slider.addEventListener("pointerup", () => {
+      slider.dataset.touched = "1";
+      saveDraft();
+      updateProgress();
+    });
+
+    return div;
+  }
+
+  function buildForm(){
+    sections.forEach(sec => {
+      makeSectionHeader(sec.title, sec.desc);
+      sec.items.forEach(item => {
+        const [label, left, right] = item;
+        form.appendChild(makeQuestionCard(label, left, right));
+      });
+    });
+  }
+
+  function getAllSliders(){
+    return Array.from(document.querySelectorAll("input[type=range][data-q]"));
+  }
+
+  function updateProgress(){
+    const sliders = getAllSliders();
+    const answered = sliders.filter(s => s.dataset.touched === "1").length;
+    progressText.textContent = `Answered ${answered} / ${TOTAL_QUESTIONS}`;
+    progressBar.value = answered;
+  }
+
+  function saveDraft(){
+    const data = {};
+    getAllSliders().forEach(s => {
+      data[s.dataset.q] = { value: s.value, touched: s.dataset.touched === "1" };
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  function restoreDraft(){
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    let saved;
+    try { saved = JSON.parse(raw); } catch { return; }
+
+    getAllSliders().forEach(s => {
+      const rec = saved[s.dataset.q];
+      if (!rec) return;
+      s.value = rec.value;
+      if (rec.touched) s.dataset.touched = "1";
+      const valueEl = s.closest(".question").querySelector(".value");
+      if (valueEl) valueEl.textContent = s.value;
+    });
+  }
+
+  function resetForm(){
+    localStorage.removeItem(STORAGE_KEY);
+    getAllSliders().forEach(s => {
+      s.value = "5";
+      delete s.dataset.touched;
+      const valueEl = s.closest(".question").querySelector(".value");
+      if (valueEl) valueEl.textContent = "5";
+    });
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function submitForm(){
+    const data = {};
+    getAllSliders().forEach(s => { data[s.dataset.q] = Number(s.value); });
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "preferred_experience_response.json";
+    a.click();
+  }
+
+  // Build + restore
+  buildForm();
+  restoreDraft();
+  updateProgress();
+</script>
+
+</body>
+</html>
